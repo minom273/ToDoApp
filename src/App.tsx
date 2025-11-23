@@ -17,6 +17,7 @@ const App = () => {
   const [newTodoPriority, setNewTodoPriority] = useState(3);
   const [newTodoDeadline, setNewTodoDeadline] = useState<Date | null>(null);
   const [newTodoNameError, setNewTodoNameError] = useState("");
+  const [userName, setUserName] = useState("寝屋川タヌキ");
 
   const [initialized, setInitialized] = useState(false);
   const localStorageKey = "TodoApp";
@@ -150,9 +151,20 @@ const App = () => {
   return (
     <div className="mx-4 mt-10 max-w-2xl md:mx-auto">
       <h1 className="mb-4 text-2xl font-bold">TodoApp</h1>
+      <div className="mb-4 flex items-center space-x-2">
+        <label htmlFor="userName" className="font-bold">ユーザー名</label>
+        <input
+          id="userName"
+          type="text"
+          value={userName}
+          onChange={(e) => setUserName(e.target.value)}
+          className="rounded-md border p-2"
+          placeholder="名前を入力してください"
+        />
+      </div>
       <div className="mb-4">
         <WelcomeMessage
-          name="寝屋川タヌキ"
+          name={userName}
           uncompletedCount={uncompletedCount}
         />
       </div>
