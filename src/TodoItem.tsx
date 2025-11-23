@@ -7,27 +7,30 @@ type Props = {
   remove: (id: string) => void;
 };
 
-const TodoItem = (props: Props) => {
-  const todo = props.todo;
+const TodoItem = ({ todo, updateIsDone, remove }: Props) => {
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between p-2 bg-white shadow rounded">
       <div className="flex items-center">
         <input
           type="checkbox"
           checked={todo.isDone}
-          onChange={(e) => props.updateIsDone(todo.id, e.target.checked)}
-          className="mr-1.5 cursor-pointer"
+          onChange={(e) => updateIsDone(todo.id, e.target.checked)}
+          className="mr-2 cursor-pointer"
         />
-        {todo.name}
-      </div>
-      <div>
-        <button
-          onClick={() => props.remove(todo.id)}
-          className="rounded-md bg-slate-200 px-2 py-1 text-sm font-bold text-white hover:bg-red-500"
+        <span
+          className={`${
+            todo.isDone ? "line-through text-gray-400" : "text-gray-800"
+          }`}
         >
-          削除
-        </button>
+          {todo.name}
+        </span>
       </div>
+      <button
+        onClick={() => remove(todo.id)}
+        className="rounded-md bg-slate-200 px-2 py-1 text-sm font-bold text-white hover:bg-red-500"
+      >
+        削除
+      </button>
     </div>
   );
 };

@@ -13,16 +13,30 @@ const App = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodoName, setNewTodoName] = useState<string>("");
   const [newTodoCategory, setNewTodoCategory] = useState<"課題" | "持ち物" | "テスト" | "その他">("課題"); //追加用カテゴリ
+  const userNameKey = "TodoAppUserName"; // userNameKey を先に定義
+  const [initialized, setInitialized] = useState(false);
+  const localStorageKey = "TodoApp";
   const [filterCategory, setFilterCategory] = useState<"全て" | "課題" | "持ち物" | "テスト" | "その他">("全て"); //表示フィルタ用カテゴリ
   const [newTodoPriority, setNewTodoPriority] = useState(3);
   const [newTodoDeadline, setNewTodoDeadline] = useState<Date | null>(null);
   const [newTodoNameError, setNewTodoNameError] = useState("");
-  const [userName, setUserName] = useState("寝屋川タヌキ");
+  const [userName, setUserName] = useState<string>(() => {
+    try {
+      return localStorage.getItem(userNameKey) ?? "寝屋川タヌキ";
+    } catch {
+      return "寝屋川タヌキ";
+    }
+  });
 
-  const [initialized, setInitialized] = useState(false);
-  const localStorageKey = "TodoApp";
 
+  
 
+  useEffect(() => {
+    const storedName = localStorage.getItem(userNameKey);
+    if (storedName) {
+      setUserName(storedName);
+    }
+  }, []);
 
   useEffect(() => {
     const todoJsonStr = localStorage.getItem(localStorageKey);
@@ -40,11 +54,17 @@ const App = () => {
     setInitialized(true);
   }, []);
   // 状態 todos または initialized に変更があったときTodoデータを保存
+
+
   useEffect(() => {
     if (initialized) {
       localStorage.setItem(localStorageKey, JSON.stringify(todos));
     }
   }, [todos, initialized]);
+
+  useEffect(() => {
+    localStorage.setItem(userNameKey, userName);
+  }, [userName]);
 
   useEffect(() => {
     const todoJsonStr = localStorage.getItem(localStorageKey);
@@ -145,12 +165,18 @@ const App = () => {
     ? todos
     : todos.filter((todo) => todo.category === filterCategory);
 
+  // 未完了タスクを先に、完了タスクを後に並べ替え
+  const sortedTodos = [...filteredTodos].sort((a, b) => {
+    if (a.isDone === b.isDone) return 0;
+    return a.isDone ? 1 : -1;
+  });
+
   
   
 
   return (
-    <div className="mx-4 mt-10 max-w-2xl md:mx-auto">
-      <h1 className="mb-4 text-2xl font-bold">TodoApp</h1>
+    <div className="mx-4 mt-10 max-w-3xl md:mx-auto bg-slate-50 min-h-screen p-6">
+      <h1 className="mb-6 text-3xl font-extrabold text-indigo-700">TodoApp</h1>
       <div className="mb-4 flex items-center space-x-2">
         <label htmlFor="userName" className="font-bold">ユーザー名</label>
         <input
@@ -182,10 +208,10 @@ const App = () => {
 
 
 
-      <TodoList todos={filteredTodos} updateIsDone={updateIsDone} remove={remove} />
+      <TodoList todos={sortedTodos} updateIsDone={updateIsDone} remove={remove} />
 
         {/*これ以降タスク追加部分*/}
-      <div className="bg-white shadow-md rounded-lg p-4 max-w-md mx-auto mt-10">
+      <div className="bg-white shadow-xl rounded-2xl p-6 max-w-2xl mx-auto mt-8 border border-state-100">
         <div className="absolute -left-4 top-1/2 transform -translate-y-1/2 w-4 h-16 bg-pink-400 rounded-r-full shadow-md"></div>
         <div className="absolute -left-4 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-white rounded-full border border-gray-300"></div>
         <h2 className="text-lg font-bold">新しいタスクの追加</h2>
@@ -273,7 +299,7 @@ const App = () => {
           type="button"
           onClick={addNewTodo}
           className={twMerge(
-            "rounded-md bg-indigo-500 px-3 py-1 font-bold text-white hover:bg-indigo-600",
+            "rounded-lg bg-indigo-500 to-indigo-400 px-3 py-1 font-bold text-white hover:bg-indigo-600",
             newTodoNameError && "cursor-not-allowed opacity-50"
           )}
         >

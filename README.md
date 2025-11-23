@@ -1,31 +1,37 @@
 # TodoApp
 
-React、TypeScript、Tailwind CSS を使用し、ローカルストレージでデータを永続化した「Todoアプリ」です。
+React + TypeScript で作成した Todo アプリです。  
+タスクの追加・削除・完了管理に加えて、カテゴリ分けや優先度設定、期限設定、ユーザー名のカスタマイズ機能を備えています。  
+LocalStorage を利用してデータを永続化しているため、ブラウザをリロードしてもタスクやユーザー名が保持されます。
 
-## 開発履歴
+![TodoApp Screenshot](docs/todoApp1.png)
 
-- 2025年10月23日：プロジェクト開始
+---
 
-## ライセンス
+## 機能一覧
+- タスクの追加・削除
+- タスクの完了/未完了切り替え（完了タスクは取り消し線表示）
+- 完了済みタスクの一括削除
+- タスクのカテゴリ分け（課題 / 持ち物 / テスト / その他）
 
-MIT License
+![TodoApp Screenshot](docs/todoApp2.png)
 
-Copyright (c) 2025 Kosen Taro
+- 表示フィルタ機能（カテゴリごと / 全てのタスク）
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+![TodoApp Screenshot](docs/todoApp3.png)
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+- 優先度設定（1〜3）
+- 期限設定（日時入力）
+- ユーザー名の設定（WelcomeMessage に反映）
+- LocalStorage によるデータ永続化
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+---
+
+## 技術スタック
+- React (Vite)
+- TypeScript
+- Tailwind CSS
+- dayjs
+- uuid
+- FontAwesome
+- LocalStorage API
