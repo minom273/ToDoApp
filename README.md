@@ -4,7 +4,7 @@ React + TypeScript で作成した Todo アプリです。
 タスクの追加・削除・完了管理に加えて、カテゴリ分けや優先度設定、期限設定、ユーザー名のカスタマイズ機能を備えています。  
 LocalStorage を利用してデータを永続化しているため、ブラウザをリロードしてもタスクやユーザー名が保持されます。
 
-![TodoApp Screenshot](docs/todoApp1.png)
+![TodoApp Screenshot](public\todoApp1.png)
 
 ---
 
@@ -14,11 +14,11 @@ LocalStorage を利用してデータを永続化しているため、ブラウ�
 - 完了済みタスクの一括削除
 - タスクのカテゴリ分け（課題 / 持ち物 / テスト / その他）
 
-![TodoApp Screenshot](docs/todoApp2.png)
+![TodoApp Screenshot](public\todoApp2.png)
 
 - 表示フィルタ機能（カテゴリごと / 全てのタスク）
 
-![TodoApp Screenshot](docs/todoApp3.png)
+![TodoApp Screenshot](public\todoApp3.png)
 
 - 優先度設定（1〜3）
 - 期限設定（日時入力）
