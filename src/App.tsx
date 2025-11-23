@@ -11,13 +11,17 @@ import { useState, useEffect } from "react";
 
 const App = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [newTodoName, setNewTodoName] = useState("");
+  const [newTodoName, setNewTodoName] = useState<string>("");
+  const [newTodoCategory, setNewTodoCategory] = useState<"課題" | "持ち物" | "テスト" | "その他">("課題"); //追加用カテゴリ
+  const [filterCategory, setFilterCategory] = useState<"全て" | "課題" | "持ち物" | "テスト" | "その他">("全て"); //表示フィルタ用カテゴリ
   const [newTodoPriority, setNewTodoPriority] = useState(3);
   const [newTodoDeadline, setNewTodoDeadline] = useState<Date | null>(null);
   const [newTodoNameError, setNewTodoNameError] = useState("");
 
   const [initialized, setInitialized] = useState(false);
   const localStorageKey = "TodoApp";
+
+
 
   useEffect(() => {
     const todoJsonStr = localStorage.getItem(localStorageKey);
@@ -41,6 +45,32 @@ const App = () => {
     }
   }, [todos, initialized]);
 
+  useEffect(() => {
+    const todoJsonStr = localStorage.getItem(localStorageKey);
+    if (todoJsonStr && todoJsonStr !== "[]") {
+      const parsed = JSON.parse(todoJsonStr) as unknown;
+
+      if (Array.isArray(parsed)) {
+        const convertedTodos: Todo[] = parsed.map((raw) => {
+          const t = raw as Partial<Todo> & { deadline?: string | null };
+          return {
+            id: t.id ?? uuid(),
+            name: typeof t.name === "string" ? t.name : "",
+            isDone: !!t.isDone,
+            priority: typeof t.priority === "number" ? t.priority : 3,
+            deadline: t.deadline ? new Date(t.deadline) : null,
+            category: (t.category as Todo["category"]) ?? "その他",
+          };
+        });
+        setTodos(convertedTodos);
+      } else {
+        setTodos(initTodos);
+      }
+    } else {
+      setTodos(initTodos);
+    }
+    setInitialized(true);
+  }, []);
   const uncompletedCount = todos.filter((todo: Todo) => !todo.isDone).length;
 
   // ▼▼ 追加
@@ -51,6 +81,7 @@ const App = () => {
       return "";
     }
   };
+
 
   const updateNewTodoName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewTodoNameError(isValidTodoName(e.target.value)); // ◀◀ 追加
@@ -68,7 +99,6 @@ const App = () => {
   };
 
   const addNewTodo = () => {
-    // ▼▼ 編集
     const err = isValidTodoName(newTodoName);
     if (err !== "") {
       setNewTodoNameError(err);
@@ -80,12 +110,13 @@ const App = () => {
       isDone: false,
       priority: newTodoPriority,
       deadline: newTodoDeadline,
+      category: newTodoCategory,  //保存するカテゴリ
     };
-    const updatedTodos = [...todos, newTodo];
-    setTodos(updatedTodos);
+    setTodos([...todos, newTodo]);
     setNewTodoName("");
     setNewTodoPriority(3);
-    setNewTodoDeadline(null);
+    setNewTodoDeadline(null)
+    setNewTodoCategory("課題");
   };
   
   const updateIsDone = (id: string, value: boolean) => {
@@ -108,6 +139,12 @@ const App = () => {
     const updatedTodos = todos.filter((todo) => todo.id !== id);
     setTodos(updatedTodos);
   };
+
+  const filteredTodos = filterCategory === "全て"
+    ? todos
+    : todos.filter((todo) => todo.category === filterCategory);
+
+  
   
 
   return (
@@ -119,11 +156,27 @@ const App = () => {
           uncompletedCount={uncompletedCount}
         />
       </div>
-      <TodoList todos={todos} updateIsDone={updateIsDone} remove={remove} />
+      <select
+        value={filterCategory}
+        onChange={(e) => setFilterCategory(e.target.value as typeof filterCategory)}
+        className="border border-gray-300 rounded px-2 py-1 mb-4"
+      >
+        <option value="全て">全てのタスク</option>
+        <option value="課題">課題</option>
+        <option value="持ち物">持ち物</option>
+        <option value="テスト">テスト</option>
+        <option value="その他">その他</option>
+      </select>
 
-      <div className="mt-5 space-y-2 rounded-md border p-3">
+
+
+      <TodoList todos={filteredTodos} updateIsDone={updateIsDone} remove={remove} />
+
+        {/*これ以降タスク追加部分*/}
+      <div className="bg-white shadow-md rounded-lg p-4 max-w-md mx-auto mt-10">
+        <div className="absolute -left-4 top-1/2 transform -translate-y-1/2 w-4 h-16 bg-pink-400 rounded-r-full shadow-md"></div>
+        <div className="absolute -left-4 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-white rounded-full border border-gray-300"></div>
         <h2 className="text-lg font-bold">新しいタスクの追加</h2>
-        {/* 編集: ここから... */}
         <div>
           <div className="flex items-center space-x-2">
             <label className="font-bold" htmlFor="newTodoName">
@@ -151,7 +204,22 @@ const App = () => {
             </div>
           )}
         </div>
-        {/* ...ここまで */}
+        {/*ここまででタスク名入力*/}
+
+        {/*タスク追加フォームのカテゴリ選択*/}
+        <select
+          value={newTodoCategory}
+          onChange={(e) => 
+            setNewTodoCategory(e.target.value as "課題" | "持ち物" | "テスト" | "その他")
+          }
+          className="border border-gray-300 rounded px-2 py-1 mb-2"
+
+>
+          <option value="課題">課題</option>
+          <option value="持ち物">持ち物</option>
+          <option value="テスト">テスト</option>
+          <option value="その他">その他</option>
+        </select>
 
         <div className="flex gap-5">
           <div className="font-bold">優先度</div>
@@ -186,6 +254,8 @@ const App = () => {
             className="rounded-md border border-gray-400 px-2 py-0.5"
           />
         </div>
+
+        
 
         <button
           type="button"
